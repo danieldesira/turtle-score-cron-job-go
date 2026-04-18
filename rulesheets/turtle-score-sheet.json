@@ -1,0 +1,68 @@
+{
+  "levelRewards": {
+    "1": 10,
+    "2": 10,
+    "3": 50,
+    "4": 75,
+    "5": 100,
+    "6": 100,
+    "7": 100,
+    "8": 100
+  },
+  "interactionRewards": {
+    "Boat": -50,
+    "GhostNest": -20,
+    "JaggedPlastic": -3,
+    "Nurdle": -1,
+    "PlasticBag": -20,
+    "Rope": -20,
+    "Crab": 20,
+    "NeptuneGrass": 1,
+    "Sardine": 10,
+    "Shrimp": 4,
+    "MaleTurtle": 100
+  },
+  "levelMaxInteractions": {
+    "1": {
+      "Shrimp": 20,
+      "Sardine": 10
+    },
+    "2": {
+      "NeptuneGrass": 4,
+      "Shrimp": 30,
+      "Crab": 5
+    },
+    "3": {
+      "Shrimp": 250,
+      "Sardine": 100,
+      "MaleTurtle": 1
+    },
+    "4": {
+      "Sardine": 70,
+      "Shrimp": 300
+    },
+    "5": {
+      "Sardine": 30,
+      "Shrimp": 300
+    },
+    "6": {
+      "Crab": 1,
+      "Shrimp": 100
+    },
+    "7": {
+      "Shrimp": 120
+    },
+    "8": {
+      "Shrimp": 200
+    }
+  },
+  "durationReward": {
+    "durationLimit": 300,
+    "reward": 300
+  },
+  "resets": {
+    "max": 3,
+    "rewardPerRemaining": 50,
+    "rewardForPerfect": 200
+  }
+}
