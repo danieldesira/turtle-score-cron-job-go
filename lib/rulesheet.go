@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"os"
+	"strconv"
 )
 
 type Rulesheet struct {
@@ -44,4 +46,24 @@ func LoadRulesheet() *Rulesheet {
 	}
 
 	return &rulesheet
+}
+
+func GetFinalLevel(rulesheet *Rulesheet) int {
+	levelKeys := maps.Keys(rulesheet.LevelRewards)
+	levels := []int{}
+	for key := range levelKeys {
+		val, err := strconv.Atoi(key)
+		if err != nil {
+			fmt.Printf("Error converting level key %s to int: %v\n", key, err)
+			continue
+		}
+		levels = append(levels, val)
+	}
+	maxLevel := 0
+	for index := range levels {
+		if levels[index] > maxLevel {
+			maxLevel = levels[index]
+		}
+	}
+	return maxLevel
 }

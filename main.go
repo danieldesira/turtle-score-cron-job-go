@@ -20,6 +20,8 @@ func main() {
 	redisClient, err := lib.ConnectRedis()
 	rulesheet := lib.LoadRulesheet()
 	fmt.Println("Loaded rulesheet", rulesheet)
+	finalLevel := lib.GetFinalLevel(rulesheet)
+	fmt.Println("Final level is", finalLevel)
 
 	for newScore := redisClient.RPop(context.Background(), "scoreQueue"); newScore.Val() != ""; newScore = redisClient.RPop(context.Background(), "scoreQueue") {
 		fmt.Println("Processing new score:", newScore)
