@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/danieldesira/turtle-score-cron-job-go/lib"
@@ -23,8 +22,15 @@ func main() {
 	finalLevel := lib.GetFinalLevel(rulesheet)
 	fmt.Println("Final level is", finalLevel)
 
-	for newScore := redisClient.RPop(context.Background(), "scoreQueue"); newScore.Val() != ""; newScore = redisClient.RPop(context.Background(), "scoreQueue") {
-		fmt.Println("Processing new score:", newScore)
+	for entry := lib.GetNextScoreEntry(redisClient); entry != ""; entry = lib.GetNextScoreEntry(redisClient) {
+		score, err := lib.ParseRawScore(entry)
+		if err != nil {
+			fmt.Println("Failed to parse raw score from entry:", entry, "Error:", err)
+			continue
+		}
+		fmt.Println("Processing new score:", score)
+		processedScore := lib.ProcessScore(score, rulesheet)
+		fmt.Println("Processed score:", processedScore)
 	}
 
 }

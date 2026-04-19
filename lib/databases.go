@@ -25,3 +25,7 @@ func ConnectRedis() (*redis.Client, error) {
 	}
 	return client, nil
 }
+
+func GetNextScoreEntry(client *redis.Client) string {
+	return client.RPop(context.Background(), "scoreQueue").Val()
+}
