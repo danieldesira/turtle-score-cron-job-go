@@ -86,7 +86,7 @@ func deduceOutcome(score *RawScore, finalLevel int) string {
 // }
 
 func calculateTotalScore(score *ProcessedScore, rulesheet *Rulesheet) int {
-	return getDurationRewardIfApplicable(score, rulesheet)
+	return getDurationRewardIfApplicable(score, rulesheet) + getLevelPassRewards(score, rulesheet) + getInteractionRewards(score, rulesheet) + getResetsRewards(score, rulesheet)
 }
 
 func getDurationRewardIfApplicable(score *ProcessedScore, rulesheet *Rulesheet) int {
@@ -95,4 +95,29 @@ func getDurationRewardIfApplicable(score *ProcessedScore, rulesheet *Rulesheet) 
 	} else {
 		return 0
 	}
+}
+
+func getLevelPassRewards(score *ProcessedScore, rulesheet *Rulesheet) int {
+	points := 0
+	for level := 1; level < score.Level; level++ {
+		points += rulesheet.LevelRewards[strconv.Itoa(level)]
+	}
+	return points
+}
+
+func getInteractionRewards(score *ProcessedScore, rulesheet *Rulesheet) int {
+	points := 0
+	for key, count := range score.Interactions {
+		points += rulesheet.InteractionRewards[key] * count
+	}
+	return points
+}
+
+func getResetsRewards(score *ProcessedScore, rulesheet *Rulesheet) int {
+	points := 0
+	if score.ResetsUsed == 0 {
+		points += rulesheet.Resets.RewardForPerfect
+	}
+	points += score.ResetsUsed * rulesheet.Resets.RewardPerRemaining
+	return points
 }
