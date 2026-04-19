@@ -32,6 +32,7 @@ type ProcessedScore struct {
 	Timestamp    string
 	ResetsUsed   int
 	TotalScore   int
+	Outcome      string
 }
 
 func ProcessScore(rawScore *RawScore, rulesheet *Rulesheet) *ProcessedScore {
@@ -44,8 +45,9 @@ func ProcessScore(rawScore *RawScore, rulesheet *Rulesheet) *ProcessedScore {
 		PlayerID:     rawScore.PlayerID,
 		Timestamp:    rawScore.Timestamp,
 		ResetsUsed:   resetsUsed,
+		Outcome:      deduceOutcome(rawScore, GetFinalLevel(rulesheet)),
 	}
-	//processedScore.TotalScore = calculateTotalScore(processedScore, rulesheet)
+	processedScore.TotalScore = calculateTotalScore(processedScore, rulesheet)
 	return processedScore
 }
 
@@ -64,6 +66,14 @@ func parseInteractions(interactionsStr string) map[string]int {
 	return interactions
 }
 
+func deduceOutcome(score *RawScore, finalLevel int) string {
+	if score.Level > finalLevel {
+		return "WIN"
+	} else {
+		return "LOSE"
+	}
+}
+
 // func validateInteractions(interactions map[string]int, rulesheet *Rulesheet) bool {
 // 	for interaction, count := range interactions {
 // 		if rulesheet.InteractionRewards[interaction] > 0 {
@@ -74,3 +84,15 @@ func parseInteractions(interactionsStr string) map[string]int {
 // 		}
 // 	}
 // }
+
+func calculateTotalScore(score *ProcessedScore, rulesheet *Rulesheet) int {
+	return getDurationRewardIfApplicable(score, rulesheet)
+}
+
+func getDurationRewardIfApplicable(score *ProcessedScore, rulesheet *Rulesheet) int {
+	if score.Duration <= rulesheet.DurationRewards.DurationLimit && score.Outcome == "WIN" {
+		return rulesheet.DurationRewards.Reward
+	} else {
+		return 0
+	}
+}

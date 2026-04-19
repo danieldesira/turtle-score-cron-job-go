@@ -19,8 +19,6 @@ func main() {
 	redisClient, err := lib.ConnectRedis()
 	rulesheet := lib.LoadRulesheet()
 	fmt.Println("Loaded rulesheet", rulesheet)
-	finalLevel := lib.GetFinalLevel(rulesheet)
-	fmt.Println("Final level is", finalLevel)
 
 	for entry := lib.GetNextScoreEntry(redisClient); entry != ""; entry = lib.GetNextScoreEntry(redisClient) {
 		score, err := lib.ParseRawScore(entry)
