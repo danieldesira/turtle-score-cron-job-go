@@ -29,6 +29,12 @@ func main() {
 		fmt.Println("Processing new score:", score)
 		processedScore := lib.ProcessScore(score, rulesheet)
 		fmt.Println("Processed score:", processedScore)
+		if processedScore != nil {
+			err = lib.SaveProcessedScore(processedScore)
+			if err != nil {
+				fmt.Println("Failed to save processed score:", err)
+			}
+		}
 	}
 
 }

@@ -2,9 +2,12 @@ package lib
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -28,4 +31,20 @@ func ConnectRedis() (*redis.Client, error) {
 
 func GetNextScoreEntry(client *redis.Client) string {
 	return client.RPop(context.Background(), "scoreQueue").Val()
+}
+
+func connectPostgres() *sql.DB {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal("Failed to connect to Postgres:", err)
+	}
+	return db
+}
+
+func SaveProcessedScore(score *ProcessedScore) error {
+	db := connectPostgres()
+	_, err := db.Exec(`INSERT INTO scores (player_id, level, duration, resets_used, points, outcome, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		score.PlayerID, score.Level, score.Duration, score.ResetsUsed, score.TotalScore, score.Outcome, score.Timestamp)
+	defer db.Close()
+	return err
 }

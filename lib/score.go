@@ -47,8 +47,12 @@ func ProcessScore(rawScore *RawScore, rulesheet *Rulesheet) *ProcessedScore {
 		ResetsUsed:   resetsUsed,
 		Outcome:      deduceOutcome(rawScore, GetFinalLevel(rulesheet)),
 	}
-	processedScore.TotalScore = calculateTotalScore(processedScore, rulesheet)
-	return processedScore
+	if validateInteractions(rawScore.Level, interactions, rulesheet) {
+		processedScore.TotalScore = calculateTotalScore(processedScore, rulesheet)
+		return processedScore
+	} else {
+		return nil
+	}
 }
 
 func parseInteractions(interactionsStr string) map[string]int {
@@ -70,20 +74,24 @@ func deduceOutcome(score *RawScore, finalLevel int) string {
 	if score.Level > finalLevel {
 		return "WIN"
 	} else {
-		return "LOSE"
+		return "LOSS"
 	}
 }
 
-// func validateInteractions(interactions map[string]int, rulesheet *Rulesheet) bool {
-// 	for interaction, count := range interactions {
-// 		if rulesheet.InteractionRewards[interaction] > 0 {
-// 			maxAllowedOcurrances := 0
-// 			for level := 1; level <= GetFinalLevel(rulesheet); level++ {
-
-// 			}
-// 		}
-// 	}
-// }
+func validateInteractions(scoreLevel int, interactions map[string]int, rulesheet *Rulesheet) bool {
+	for interaction, count := range interactions {
+		if rulesheet.InteractionRewards[interaction] > 0 {
+			maxAllowedOcurrances := 0
+			for level := 1; level <= scoreLevel; level++ {
+				maxAllowedOcurrances += rulesheet.LevelMaxInteractions[strconv.Itoa(level)][interaction]
+			}
+			if count > maxAllowedOcurrances {
+				return false
+			}
+		}
+	}
+	return true
+}
 
 func calculateTotalScore(score *ProcessedScore, rulesheet *Rulesheet) int {
 	return getDurationRewardIfApplicable(score, rulesheet) + getLevelPassRewards(score, rulesheet) + getInteractionRewards(score, rulesheet) + getResetsRewards(score, rulesheet)
